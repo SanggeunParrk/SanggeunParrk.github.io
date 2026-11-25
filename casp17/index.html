@@ -123,13 +123,15 @@
   </section>
 
   <section>
-    <h2><span class="n">4</span>More samples for the same budget</h2>
+    <h2><span class="n">4</span>Conclusions and discussion</h2>
     <ul>
-      <li>AlphaFold 3, 1,522 FoldBench targets × 25 samples, H100 GPU-hours: kit 14.5 → ours 10.0 (bf16) → 8.2 (FP8, 8-bit).</li>
-      <li><b>bf16: 45% more samples per GPU-hour; every task within 3.4 points of the kit.</b></li>
-      <li>FP8 (opt-in): 75% more; −3.0 / −4.3 points vs bf16 on antibody–antigen / protein–RNA (seed-to-seed spread 4.7 / 3.1): use bf16 there.</li>
+      <li><b>Whole FoldBench with AlphaFold 3: 1.45× faster than the kit with bf16, 1.75× with FP8; bf16 within 3.4 points of the kit on every task.</b></li>
     </ul>
-    <figure><img src="img/body_foldbench.png" alt="Samples per H100-hour for the kit, bf16 and FP8, and accuracy differences per FoldBench task"></figure>
+    <figure><img src="img/body_foldbench.png" alt="H100 GPU-hours for AlphaFold 3 on the whole FoldBench: Anthropic's kit 14.5, our bf16 10.0, FP8 8.2"></figure>
+    <ul>
+      <li>Same predictions, faster: inference 1.3–3.9× and training 1.5–4.2×, one kernel library for eleven predictors on four GPUs.</li>
+      <li>The saved budget buys more samples or more targets; opt-in FP8 loses 3.0 / 4.3 points on antibody–antigen / protein–RNA, so use bf16 there.</li>
+    </ul>
   </section>
 
   <section class="poster">
