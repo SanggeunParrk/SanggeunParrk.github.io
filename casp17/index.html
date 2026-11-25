@@ -103,7 +103,7 @@
     <h2><span class="n">2</span>Predictions within sampling noise; training loss matches</h2>
     <ul>
       <li>Same seed, same starting noise: <b>median 0.33 Å from the PyTorch sample, against 1.44 Å between two PyTorch samples</b> (1,195 pairs; smaller in every FoldBench<sup>14</sup> task).</li>
-      <li>bf16 kernels vs our PyTorch backend: lDDT, DockQ and lDDT-PLI change by &lt; 0.01.</li>
+      <li>bf16 (16-bit) kernels vs our PyTorch backend: lDDT, DockQ and lDDT-PLI change by &lt; 0.01.</li>
     </ul>
     <figure><img src="img/body_rmsd.png" alt="Median RMSD to the same-seed PyTorch sample against two PyTorch samples, per FoldBench task"></figure>
     <ul>
@@ -125,8 +125,8 @@
   <section>
     <h2><span class="n">4</span>More samples for the same budget</h2>
     <ul>
-      <li>AlphaFold 3, 1,522 FoldBench targets × 25 samples, H100 GPU-hours: kit 14.5 → ours 10.0 (bf16) → 8.2 (FP8).</li>
-      <li><b>bf16: 45% more samples per GPU-hour</b> (1.37× in a same-server rerun); <b>every task within 3.4 points of the kit.</b></li>
+      <li>AlphaFold 3, 1,522 FoldBench targets × 25 samples, H100 GPU-hours: kit 14.5 → ours 10.0 (bf16) → 8.2 (FP8, 8-bit).</li>
+      <li><b>bf16: 45% more samples per GPU-hour; every task within 3.4 points of the kit.</b></li>
       <li>FP8 (opt-in): 75% more; −3.0 / −4.3 points vs bf16 on antibody–antigen / protein–RNA (seed-to-seed spread 4.7 / 3.1): use bf16 there.</li>
     </ul>
     <figure><img src="img/body_foldbench.png" alt="Samples per H100-hour for the kit, bf16 and FP8, and accuracy differences per FoldBench task"></figure>
