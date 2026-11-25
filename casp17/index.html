@@ -79,8 +79,8 @@
         <figcaption>Inference: speed-up over each of Anthropic's 12 drop-in, per-predictor kits (1–16 copies of azurin, 128–2,048 tokens). Faster in all 203 runs that both completed on 4 GPUs.</figcaption>
       </figure>
       <figure>
-        <img src="img/big_train_C.png" alt="Training speed per GPU normalised to compiled PyTorch: ours is fastest on H100, A100, RTX 5090 and B200">
-        <figcaption>Training: AlphaFold 3, 384 tokens, speed-up over compiled PyTorch per training example on four GPUs. Best alternative is compiled cuEquivariance on every GPU.</figcaption>
+        <img src="img/big_train_C.png" alt="Training speed per GPU relative to the best alternative: ours is 3.1, 1.5, 1.7 and 4.2 times faster on H100, A100, RTX 5090 and B200">
+        <figcaption>Training: AlphaFold 3, 384 tokens, speed per training example on four GPUs relative to the best alternative (compiled cuEquivariance on every GPU).</figcaption>
       </figure>
       <figure>
         <img src="img/ff_strip.png" alt="FoldForge: eleven released checkpoints run through one model graph whose modules are switched per predictor, on top of the miniworld-engine kernel library">
@@ -100,7 +100,7 @@
   </section>
 
   <section>
-    <h2><span class="n">2</span>Predictions within sampling noise; matching training</h2>
+    <h2><span class="n">2</span>Predictions within sampling noise; training loss matches</h2>
     <ul>
       <li>Same seed, same starting noise: <b>median 0.33 Å from the PyTorch sample, against 1.44 Å between two PyTorch samples</b> (1,195 pairs; smaller in every FoldBench<sup>14</sup> task).</li>
       <li>bf16 kernels vs our PyTorch backend: lDDT, DockQ and lDDT-PLI change by &lt; 0.01.</li>
