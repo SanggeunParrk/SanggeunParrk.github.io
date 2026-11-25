@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CASP17 poster · Optimized kernels for AlphaFold 3-family models</title>
+<meta name="description" content="Optimized kernels and pipelines accelerate AlphaFold 3-family prediction and training. CASP17 poster, Sanggeun Park and Minkyung Baek, Seoul National University.">
+<style>
+  :root {
+    --deep: #2B1B57; --violet: #7048C8; --light: #B9A3EA; --lav: #EEEAF8; --band: #F5F2FC;
+    --ink: #22252B; --muted: #5B6275; --line: #DCD4F2; --foot: #4C3196;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: #fff; color: var(--ink);
+         font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 16px; }
+  header { padding: 40px 0 28px; border-bottom: 1px solid var(--line); }
+  .venue { color: var(--violet); font-weight: 700; letter-spacing: .04em; font-size: 14px; text-transform: uppercase; }
+  h1 { color: var(--deep); font-size: clamp(26px, 5vw, 40px); line-height: 1.15; margin: 10px 0 14px; }
+  .lead { color: var(--violet); font-weight: 700; font-size: clamp(16px, 2.4vw, 19px); margin: 0 0 14px; }
+  .authors { font-weight: 700; margin: 0; }
+  .affil { color: var(--muted); font-size: 15px; margin: 2px 0 0; }
+  .buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+  .btn { display: inline-block; padding: 10px 16px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 15px;
+         border: 1.5px solid var(--violet); color: var(--violet); }
+  .btn.primary { background: var(--violet); color: #fff; }
+  .btn:hover { background: var(--deep); border-color: var(--deep); color: #fff; }
+  code { font: 15px/1.4 ui-monospace, Menlo, monospace; background: var(--lav); color: var(--deep); padding: 2px 6px; border-radius: 4px; }
+  section { padding: 34px 0 6px; }
+  h2 { color: var(--deep); font-size: 24px; margin: 0 0 12px; padding-bottom: 6px; border-bottom: 3px solid var(--violet); }
+  h2 .n { color: var(--violet); margin-right: 8px; }
+  ul { padding-left: 0; list-style: none; margin: 0 0 16px; }
+  li { position: relative; padding-left: 22px; margin: 6px 0; }
+  li::before { content: "–"; position: absolute; left: 2px; color: var(--violet); }
+  b { color: var(--deep); }
+  figure { margin: 18px 0 22px; }
+  figure img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+  figcaption { color: var(--muted); font-size: 14px; margin-top: 6px; }
+  .band { background: var(--band); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-top: 28px; padding: 8px 0 20px; }
+  .grid2 { display: grid; grid-template-columns: 1fr; gap: 0 24px; }
+  @media (min-width: 860px) { .grid2 { grid-template-columns: 1.25fr 1fr; align-items: end; } }
+  .poster img { border: 1px solid var(--line); border-radius: 6px; width: 100%; max-width: 420px; display: block; }
+  ol.refs { padding-left: 22px; font-size: 14px; color: var(--muted); }
+  ol.refs li { list-style: decimal; padding-left: 4px; margin: 3px 0; }
+  ol.refs li::before { content: none; }
+  a { color: var(--violet); }
+  footer { background: var(--foot); color: #fff; margin-top: 40px; padding: 26px 0; font-size: 15px; }
+  footer a { color: #fff; }
+  footer p { margin: 2px 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="venue">CASP17 · Rome · December 2026 · Poster</div>
+    <h1>Optimized kernels and pipelines accelerate AlphaFold 3-family prediction and training</h1>
+    <p class="lead">Predictions within sampling noise · inference 1.8× faster than Anthropic's optimized kits (H100 median) ·
+      training 1.5–4.2× faster than the best alternative · 45–75% more samples per GPU-hour</p>
+    <p class="authors">Sanggeun Park, Minkyung Baek*</p>
+    <p class="affil">Department of Biological Sciences, Seoul National University · *minkbaek@snu.ac.kr</p>
+    <div class="buttons">
+      <a class="btn primary" href="poster_CASP17_Park_Baek.pdf">Poster (PDF)</a>
+      <a class="btn" href="https://github.com/SanggeunParrk/miniworld-engine">miniworld-engine (kernels)</a>
+      <a class="btn" href="https://github.com/SanggeunParrk/FoldForge">FoldForge (predictors)</a>
+    </div>
+    <p style="margin:16px 0 0"><code>pip install miniworld-engine</code>
+      <span class="affil">&nbsp;wheels: H100, A100, RTX 5090 · B200: build from source</span></p>
+  </div>
+</header>
+
+<div class="band">
+  <div class="wrap">
+    <section style="padding-top:22px">
+      <h2>Key results</h2>
+      <figure>
+        <img src="img/big_inf_D.png" alt="Inference speed-up over Anthropic's optimized kits for each of 12 kits on an H100; every predictor is faster, median 1.8×">
+        <figcaption>Inference: speed-up over each of Anthropic's 12 drop-in, per-predictor kits (1–16 copies of azurin, 128–2,048 tokens). Faster in all 203 runs that both completed on 4 GPUs.</figcaption>
+      </figure>
+      <figure>
+        <img src="img/big_train_C.png" alt="Training speed per GPU normalised to compiled PyTorch: ours is fastest on H100, A100, RTX 5090 and B200">
+        <figcaption>Training: AlphaFold 3, 384 tokens, speed-up over compiled PyTorch per training example on four GPUs. Best alternative is compiled cuEquivariance on every GPU.</figcaption>
+      </figure>
+      <figure>
+        <img src="img/ff_strip.png" alt="FoldForge: eleven released checkpoints run through one model graph whose modules are switched per predictor, on top of the miniworld-engine kernel library">
+        <figcaption>FoldForge: one graph for eleven predictors, one kernel library (miniworld-engine) underneath. Outputs are from a real H100 run on FoldBench target 7wvs.</figcaption>
+      </figure>
+    </section>
+  </div>
+</div>
+
+<main class="wrap">
+  <section>
+    <h2><span class="n">1</span>Background</h2>
+    <ul>
+      <li>AlphaFold 3 and its successors<sup>1–9</sup> share pair and diffusion operators, but each release implements them on its own. Public kernels, including Anthropic's optimized kits<sup>10</sup> (drop-in, per-predictor inference packages), cover some operators, some GPUs, or inference only.</li>
+      <li><b>One kernel library for all of them, for inference and training.</b></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="n">2</span>Predictions within sampling noise; matching training</h2>
+    <ul>
+      <li>Same seed, same starting noise: <b>median 0.33 Å from the PyTorch sample, against 1.44 Å between two PyTorch samples</b> (1,195 pairs; smaller in every FoldBench<sup>14</sup> task).</li>
+      <li>bf16 kernels vs our PyTorch backend: lDDT, DockQ and lDDT-PLI change by &lt; 0.01.</li>
+    </ul>
+    <figure><img src="img/body_rmsd.png" alt="Median RMSD to the same-seed PyTorch sample against two PyTorch samples, per FoldBench task"></figure>
+    <ul>
+      <li><b>Protenix v1 fine-tuning: loss within a median 0.001 of compiled PyTorch per step</b> (step-to-step change 0.019), 3.4× faster per step.</li>
+    </ul>
+    <figure><img src="img/body_loss.png" alt="Fine-tuning loss per optimizer step, ours against compiled PyTorch"></figure>
+  </section>
+
+  <section>
+    <h2><span class="n">3</span>How we built the kernels</h2>
+    <ul>
+      <li><b>One developer + coding agents (Claude Code):</b> the developer sets goals and rules; agents write kernels, tests and benchmarks; slower than a public baseline = failure → profile (Nsight Compute<sup>11</sup>) → rewrite.</li>
+      <li>CUDA forward + backward kernels per GPU (A100, H100, B200, RTX 5090); every output and gradient checked against float64; no silent fallback; CUDA &gt; Triton<sup>12</sup> &gt; PyTorch.</li>
+      <li><b>On an H100, faster than Anthropic's kernels in all 28 operator classes they cover</b> (25 inference + 3 training) <b>and than cuEquivariance<sup>13</sup> in all 12 of its classes.</b></li>
+    </ul>
+    <figure><img src="img/f1a.png" alt="Development loop: the developer's instructions and the agents' write, measure, judge and profile cycle" style="max-width:720px;margin:0 auto"></figure>
+  </section>
+
+  <section>
+    <h2><span class="n">4</span>More samples for the same budget</h2>
+    <ul>
+      <li>AlphaFold 3, 1,522 FoldBench targets × 25 samples, H100 GPU-hours: kit 14.5 → ours 10.0 (bf16) → 8.2 (FP8).</li>
+      <li><b>bf16: 45% more samples per GPU-hour</b> (1.37× in a same-server rerun); <b>every task within 3.4 points of the kit.</b></li>
+      <li>FP8 (opt-in): 75% more; −3.0 / −4.3 points vs bf16 on antibody–antigen / protein–RNA (seed-to-seed spread 4.7 / 3.1): use bf16 there.</li>
+    </ul>
+    <figure><img src="img/body_foldbench.png" alt="Samples per H100-hour for the kit, bf16 and FP8, and accuracy differences per FoldBench task"></figure>
+  </section>
+
+  <section class="poster">
+    <h2>Full poster</h2>
+    <a href="poster_CASP17_Park_Baek.pdf"><img src="img/poster_preview.jpg" alt="Preview of the full A0 poster"></a>
+    <p class="affil">A0 portrait, PDF (8 MB).</p>
+  </section>
+
+  <section>
+    <h2>References</h2>
+    <ol class="refs">
+      <li>Abramson, J. et al. Accurate structure prediction of biomolecular interactions with AlphaFold 3. <i>Nature</i> 630, 493–500 (2024). <a href="https://doi.org/10.1038/s41586-024-07487-w">doi</a></li>
+      <li>Passaro, S. et al. Boltz-2. bioRxiv (2025). <a href="https://doi.org/10.1101/2025.06.14.659707">doi</a></li>
+      <li>Chai Discovery et al. Chai-1. bioRxiv (2024). <a href="https://doi.org/10.1101/2024.10.10.615955">doi</a></li>
+      <li>ByteDance AML AI4Science Team et al. Protenix. bioRxiv (2025). <a href="https://doi.org/10.1101/2025.01.08.631967">doi</a></li>
+      <li>The OpenFold3 Team. OpenFold3-preview. Zenodo (2026). <a href="https://doi.org/10.5281/zenodo.19001000">doi</a></li>
+      <li>Corley, N. et al. RoseTTAFold3. bioRxiv (2025). <a href="https://doi.org/10.1101/2025.08.14.670328">doi</a></li>
+      <li>Candido, S. et al. ESMFold2. Preprint (2026). <a href="https://doi.org/10.64898/2026.06.03.729735">doi</a></li>
+      <li>Aureka AI OpenDDE project. arXiv 2607.03787 (2026). <a href="https://arxiv.org/abs/2607.03787">arXiv</a></li>
+      <li>Qiao, L. et al. IntelliFold2. Preprint (2026). <a href="https://doi.org/10.64898/2026.02.09.704787">doi</a></li>
+      <li>Anthropic. How Claude is uplifting biomolecular modeling (2026). <a href="https://www.anthropic.com/research/claude-uplifts-biomolecular-modeling">link</a></li>
+      <li>NVIDIA. Nsight Compute (2026). <a href="https://developer.nvidia.com/nsight-compute">link</a></li>
+      <li>Tillet, P., Kung, H. T. &amp; Cox, D. Triton. <i>Proc. MAPL</i> 10–19 (ACM, 2019). <a href="https://doi.org/10.1145/3315508.3329973">doi</a></li>
+      <li>NVIDIA. cuEquivariance v0.12.0 (2026). <a href="https://github.com/NVIDIA/cuEquivariance">link</a></li>
+      <li>Xu, S. et al. FoldBench. <i>Nat. Commun.</i> 17, 442 (2026).</li>
+    </ol>
+    <p class="affil">Supported by IITP (RS-2023-00220628, RS-2025-25442149) and KBSI NFEC (RS-2024-00402698) grants (MSIT).</p>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><b style="color:#fff">Laboratory of Computational Structural and Systems Biology</b></p>
+    <p>Department of Biological Sciences, Seoul National University · contact: <a href="mailto:minkbaek@snu.ac.kr">minkbaek@snu.ac.kr</a></p>
+  </div>
+</footer>
+
+<script>
+  // tap a figure to open it at full size (for phones)
+  document.querySelectorAll("figure img").forEach(function (im) {
+    var a = document.createElement("a"); a.href = im.getAttribute("src");
+    im.parentNode.insertBefore(a, im); a.appendChild(im);
+  });
+</script>
+</body>
+</html>
