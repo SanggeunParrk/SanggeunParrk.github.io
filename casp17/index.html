@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CASP17 poster · Optimized kernels for AlphaFold 3-family models</title>
-<meta name="description" content="Optimized kernels and pipelines accelerate AlphaFold 3-family prediction and training. CASP17 poster, Sanggeun Park and Minkyung Baek, Seoul National University.">
+<title>CASP17 poster · Accelerating AlphaFold 3-style models</title>
+<meta name="description" content="Accelerating training and inference across AlphaFold 3-style models via kernel and pipeline optimization. CASP17 poster, Sanggeun Park and Minkyung Baek, Seoul National University.">
 <style>
   :root {
     --deep: #2B1B57; --violet: #7048C8; --light: #B9A3EA; --lav: #EEEAF8; --band: #F5F2FC;
@@ -55,11 +55,9 @@
 <header>
   <div class="wrap">
     <div class="venue">CASP17 · Rome · December 2026 · Poster</div>
-    <h1>Optimized kernels and pipelines accelerate AlphaFold 3-family prediction and training</h1>
-    <p class="lead">Predictions within sampling noise · inference 1.8× faster than Anthropic's optimized kits (H100 median) ·
-      training 1.5–4.2× faster than the best alternative · 45–75% more samples per GPU-hour</p>
+    <h1>Accelerating training and inference across AlphaFold 3-style models via kernel and pipeline optimization</h1>
     <p class="authors">Sanggeun Park, Minkyung Baek*</p>
-    <p class="affil">Department of Biological Sciences, Seoul National University · *minkbaek@snu.ac.kr</p>
+    <p class="affil">Department of Biological Sciences, Seoul National University, Republic of Korea<br>Correspondence to: <a href="mailto:minkbaek@snu.ac.kr">minkbaek@snu.ac.kr</a></p>
     <div class="buttons">
       <a class="btn primary" href="poster_CASP17_Park_Baek.pdf">Poster (PDF)</a>
       <a class="btn" href="https://github.com/SanggeunParrk/foldjet-engine">foldjet-engine (kernels)</a>
@@ -75,8 +73,8 @@
     <section style="padding-top:22px">
       <h2>Key results</h2>
       <figure>
-        <img src="img/big_inf_D.png" alt="Inference speed-up over Anthropic's optimized kits for each of 12 kits on an H100; every predictor is faster, median 1.8×">
-        <figcaption>Inference: speed-up over each of Anthropic's 12 drop-in, per-predictor kits (1–16 copies of azurin, 128–2,048 tokens). Faster in all 203 runs that both completed on 4 GPUs.</figcaption>
+        <img src="img/big_inf_E.png" alt="Inference speed-up over PyTorch per predictor on an H100, 3.9 to 6.6 times; over Anthropic's kits 1.5 to 5.2 times">
+        <figcaption>Inference: median speed-up per predictor on an H100 over the same model with PyTorch operators, and over Anthropic's drop-in, per-predictor kit (5I28, 1–16 copies, 128–2,048 tokens; all under compile + CUDA graphs, kits in their fast mode).</figcaption>
       </figure>
       <figure>
         <img src="img/big_train_C.png" alt="Training speed per GPU relative to the best alternative: ours is 3.1, 1.5, 1.7 and 4.2 times faster on H100, A100, RTX 5090 and B200">
@@ -94,43 +92,40 @@
   <section>
     <h2><span class="n">1</span>Background</h2>
     <ul>
-      <li>AlphaFold 3 and its successors<sup>1–9</sup> share pair and diffusion operators, but each release implements them on its own. Public kernels, including Anthropic's optimized kits<sup>10</sup> (drop-in, per-predictor inference packages), cover some operators, some GPUs, or inference only.</li>
-      <li><b>One kernel library for all of them, for inference and training.</b></li>
+      <li>AlphaFold 3 and related models<sup>1–9</sup> use similar pair and diffusion operators, yet maintain separate implementations. Existing optimized kernels, including those from Anthropic<sup>10</sup>, are limited in operator coverage, GPU support, or training support.</li>
+      <li>To overcome these limitations, we developed <b>a unified kernel library supporting both training and inference across AlphaFold 3-style models.</b></li>
     </ul>
   </section>
-
   <section>
-    <h2><span class="n">2</span>Predictions within sampling noise; training loss matches</h2>
+    <h2><span class="n">2</span>Preserving prediction accuracy and training behavior</h2>
     <ul>
-      <li>Same seed, same starting noise: <b>median 0.33 Å from the PyTorch sample, against 1.44 Å between two PyTorch samples</b> (1,195 pairs; smaller in every FoldBench<sup>14</sup> task).</li>
-      <li>bf16 (16-bit) kernels vs our PyTorch backend: lDDT, DockQ and lDDT-PLI change by &lt; 0.01.</li>
+      <li>With identical seeds and starting noise, predictions differ from the PyTorch reference by a <b>median RMSD of 0.33 Å, compared with 1.44 Å between independent PyTorch samples</b> (1,195 pairs; smaller across all FoldBench<sup>14</sup> tasks).</li>
+      <li>In bf16 precision, lDDT, DockQ, and lDDT-PLI differ by less than 0.01 between our optimized kernels and the PyTorch backend.</li>
     </ul>
     <figure><img src="img/body_rmsd.png" alt="Median RMSD to the same-seed PyTorch sample against two PyTorch samples, per FoldBench task"></figure>
     <ul>
-      <li><b>Protenix v1 fine-tuning: loss within a median 0.001 of compiled PyTorch per step</b> (step-to-step change 0.019), 3.4× faster per step.</li>
+      <li><b>Protenix v1 fine-tuning runs 3.4× faster per step</b>, with a median loss difference of 0.001 from compiled PyTorch (compared with a step-to-step variation of 0.019).</li>
     </ul>
     <figure><img src="img/body_loss.png" alt="Fine-tuning loss per optimizer step, ours against compiled PyTorch"></figure>
   </section>
-
   <section>
-    <h2><span class="n">3</span>How we built the kernels</h2>
+    <h2><span class="n">3</span>Agent-assisted kernel development and optimization</h2>
     <ul>
-      <li><b>One developer + coding agents (Claude Code):</b> the developer sets goals and rules; agents write kernels, tests and benchmarks; slower than a public baseline = failure → profile (Nsight Compute<sup>11</sup>) → rewrite.</li>
-      <li>CUDA forward + backward kernels per GPU (A100, H100, B200, RTX 5090); every output and gradient checked against float64; no silent fallback; CUDA &gt; Triton<sup>12</sup> &gt; PyTorch.</li>
-      <li><b>On an H100, faster than Anthropic's kernels in all 28 operator classes they cover</b> (25 inference + 3 training) <b>and than cuEquivariance<sup>13</sup> in all 12 of its classes.</b></li>
+      <li><b>One developer working with coding agents (Opus 5, Opus 5.5, Sonnet 5.5):</b> the developer defines goals and constraints; agents implement, test, and benchmark kernels, iteratively profiling (Nsight Compute<sup>11</sup>) and rewriting those that fail to outperform baselines.</li>
+      <li>GPU-specific CUDA kernels for both forward and backward passes (A100, H100, B200, RTX 5090). All outputs and gradients validated against float64 references, with an explicit backend priority: CUDA &gt; Triton<sup>12</sup> &gt; PyTorch.</li>
+      <li><b>On H100, our kernels outperform Anthropic's kernels across all 28 supported operator classes (25 inference + 3 training) and cuEquivariance<sup>13</sup> across all 12 supported classes.</b></li>
     </ul>
     <figure><img src="img/f1a.png" alt="Development loop: the developer's instructions and the agents' write, measure, judge and profile cycle" style="max-width:720px;margin:0 auto"></figure>
   </section>
-
   <section>
     <h2><span class="n">4</span>Conclusions and discussion</h2>
     <ul>
-      <li><b>Whole FoldBench with AlphaFold 3: 1.45× faster than the kit with bf16, 1.75× with FP8; bf16 within 3.4 points of the kit on every task.</b></li>
+      <li><b>Combined kernel and pipeline optimization reduces the total runtime for predicting all FoldBench targets</b> with AlphaFold 3, achieving 1.45× and 1.75× speedups over Anthropic's kit in bf16 and FP8, respectively.</li>
     </ul>
     <figure><img src="img/body_foldbench.png" alt="H100 GPU-hours for AlphaFold 3 on the whole FoldBench: Anthropic's kit 14.5, our bf16 10.0, FP8 8.2"></figure>
     <ul>
-      <li>Same predictions, faster: inference 1.3–3.9× and training 1.5–4.2×, one kernel library for eleven predictors on four GPUs.</li>
-      <li>The saved budget buys more samples or more targets; opt-in FP8 loses 3.0 / 4.3 points on antibody–antigen / protein–RNA, so use bf16 there.</li>
+      <li>A unified kernel library accelerates inference by 3.9–6.6× over PyTorch (1.5–5.2× over Anthropic's kits) and training by 1.5–4.2× across eleven predictors and four GPU architectures, while maintaining model performance.</li>
+      <li>These speedups enable more extensive sampling and large-scale structure prediction within the same computational budget.</li>
     </ul>
   </section>
 
