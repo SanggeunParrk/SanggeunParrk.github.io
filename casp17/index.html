@@ -73,11 +73,11 @@
     <section style="padding-top:22px">
       <h2>Key results</h2>
       <figure>
-        <img src="img/big_inf_E.png" alt="Inference speed-up over PyTorch per predictor on an H100, 3.9 to 6.6 times; over Anthropic's kits 1.5 to 5.2 times">
-        <figcaption>Inference: median speed-up per predictor on an H100 over the same model with PyTorch operators, and over Anthropic's drop-in, per-predictor kit (5I28, 1–16 copies, 128–2,048 tokens; all under compile + CUDA graphs, kits in their fast mode).</figcaption>
+        <img src="img/big_inf_E.png" alt="Inference speed-up over PyTorch per predictor on an H100, 3.9 to 6.6 times; over the Anthropic kit 1.5 to 5.2 times">
+        <figcaption>Inference: median speed-up per predictor on an H100 over the same model with PyTorch operators, and over the Anthropic kit, a drop-in, per-predictor package (5I28, 1–16 copies, 128–2,048 tokens; all under compile + CUDA graphs, kits in their fast mode).</figcaption>
       </figure>
       <figure>
-        <img src="img/big_train_C.png" alt="Training speed per GPU relative to the best alternative: ours is 3.1, 1.5, 1.7 and 4.2 times faster on H100, A100, RTX 5090 and B200">
+        <img src="img/big_train_C.png" alt="Training speed per GPU relative to the best alternative: FoldJet is 3.1, 1.5, 1.7 and 4.2 times faster on H100, A100, RTX 5090 and B200">
         <figcaption>Training: AlphaFold 3, 384 tokens, speed per training example on four GPUs relative to the best alternative (compiled cuEquivariance on every GPU).</figcaption>
       </figure>
       <figure>
@@ -106,7 +106,7 @@
     <ul>
       <li><b>Protenix v1 fine-tuning runs 3.4× faster per step</b>, with a median loss difference of 0.001 from compiled PyTorch (compared with a step-to-step variation of 0.019).</li>
     </ul>
-    <figure><img src="img/body_loss.png" alt="Fine-tuning loss per optimizer step, ours against compiled PyTorch"></figure>
+    <figure><img src="img/body_loss.png" alt="Fine-tuning loss per optimizer step, FoldJet against compiled PyTorch"></figure>
   </section>
   <section>
     <h2><span class="n">3</span>Agent-assisted kernel development and optimization</h2>
@@ -120,11 +120,11 @@
   <section>
     <h2><span class="n">4</span>Conclusions and discussion</h2>
     <ul>
-      <li><b>Combined kernel and pipeline optimization reduces the total runtime for predicting all FoldBench targets</b> with AlphaFold 3, achieving 1.45× and 1.75× speedups over Anthropic's kit in bf16 and FP8, respectively.</li>
+      <li><b>Combined kernel and pipeline optimization reduces the total runtime for predicting all FoldBench targets</b> with AlphaFold 3, achieving 1.45× and 1.75× speedups over the Anthropic kit in bf16 and FP8, respectively.</li>
     </ul>
-    <figure><img src="img/body_foldbench.png" alt="H100 GPU-hours for AlphaFold 3 on the whole FoldBench: Anthropic's kit 14.5, our bf16 10.0, FP8 8.2"></figure>
+    <figure><img src="img/body_foldbench.png" alt="H100 GPU-hours for AlphaFold 3 on the whole FoldBench: Anthropic kit 14.5, FoldJet bf16 10.0, FoldJet FP8 8.2"></figure>
     <ul>
-      <li>A unified kernel library accelerates inference by 3.9–6.6× over PyTorch (1.5–5.2× over Anthropic's kits) and training by 1.5–4.2× across eleven predictors and four GPU architectures, while maintaining model performance.</li>
+      <li>A unified kernel library accelerates inference by 3.9–6.6× over PyTorch (1.5–5.2× over the Anthropic kit) and training by 1.5–4.2× across eleven predictors and four GPU architectures, while maintaining model performance.</li>
       <li>These speedups enable more extensive sampling and large-scale structure prediction within the same computational budget.</li>
     </ul>
   </section>
